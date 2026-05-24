@@ -1,1 +1,926 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Power of SiX</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #f5c518;
+      --gold2: #ffd700;
+      --dark: #0a0a0f;
+      --dark2: #12121c;
+      --dark3: #1a1a2e;
+      --card: #16213e;
+      --card2: #0f3460;
+      --text: #f0f0f0;
+      --muted: #888aaa;
+      --accent: #e94560;
+    }
 
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 999;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(245,197,24,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 56px;
+    }
+
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: var(--gold);
+    }
+    .nav-logo span { color: #fff; }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.72rem;
+      padding: 6px 9px;
+      border-radius: 20px;
+      transition: all .25s;
+    }
+    .nav-links a:hover { color: var(--gold); background: rgba(245,197,24,0.1); }
+
+    @media (max-width: 520px) {
+      .nav-links { display: none; }
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 40px;
+      background: radial-gradient(ellipse at 50% 0%, #1a1a2e 0%, #0a0a0f 70%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,197,24,0.12) 0%, transparent 70%);
+      top: -150px; left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .six-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold), #e6a817);
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 12vw, 7rem);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .hero-title .power { color: #fff; }
+    .hero-title .of { color: var(--muted); font-weight: 300; font-size: 0.5em; display: block; margin: 4px 0; }
+    .hero-title .six {
+      color: var(--gold);
+      text-shadow: 0 0 40px rgba(245,197,24,0.6);
+      font-style: italic;
+    }
+
+    .hero-sub {
+      font-size: clamp(0.85rem, 3vw, 1.1rem);
+      color: var(--muted);
+      max-width: 400px;
+      margin: 16px auto 32px;
+      line-height: 1.7;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .num {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--gold);
+      display: block;
+    }
+    .hero-stat .lbl {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      animation: bounce 2s infinite;
+    }
+    .scroll-hint svg { width: 20px; opacity: .5; }
+
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* ─── SECTIONS ─── */
+    section {
+      padding: 80px 20px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .section-number {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 6vw, 3rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .section-title .highlight { color: var(--gold); }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      max-width: 560px;
+      margin-bottom: 48px;
+    }
+
+    /* ─── COUNTDOWN ─── */
+    #countdown { border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .countdown-wrap {
+      display: flex;
+      justify-content: center;
+      gap: clamp(12px, 4vw, 36px);
+      flex-wrap: wrap;
+    }
+
+    .cd-box {
+      background: var(--card);
+      border: 1px solid rgba(245,197,24,0.2);
+      border-radius: 16px;
+      padding: clamp(20px, 4vw, 40px) clamp(18px, 3vw, 36px);
+      min-width: clamp(72px, 18vw, 120px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cd-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+    .cd-num {
+      font-size: clamp(2.4rem, 8vw, 5rem);
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+      display: block;
+      font-variant-numeric: tabular-nums;
+    }
+    .cd-label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+
+    .countdown-target {
+      text-align: center;
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .countdown-target strong { color: var(--gold); }
+
+    /* ─── TEAM ─── */
+    #team { border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+    }
+
+    .member-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 24px 16px;
+      text-align: center;
+      transition: all .3s;
+      cursor: default;
+    }
+    .member-card:hover {
+      border-color: rgba(245,197,24,0.4);
+      transform: translateY(-4px);
+      background: var(--card2);
+    }
+
+    .member-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #000;
+    }
+
+    .avatar-colors {
+      background: linear-gradient(135deg, #f5c518, #e6a817);
+    }
+    .avatar-colors.c2 { background: linear-gradient(135deg, #e94560, #c23152); }
+    .avatar-colors.c3 { background: linear-gradient(135deg, #0f3460, #1a6faf); }
+    .avatar-colors.c4 { background: linear-gradient(135deg, #533483, #7b2d8b); }
+    .avatar-colors.c5 { background: linear-gradient(135deg, #11999e, #1baaaf); }
+    .avatar-colors.c6 { background: linear-gradient(135deg, #e05d1a, #f08030); }
+
+    .member-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .member-role {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* ─── GOAL 60,000 ─── */
+    #goal { border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .goal-big {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .goal-number {
+      font-size: clamp(4rem, 18vw, 10rem);
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 60px rgba(245,197,24,0.4);
+      line-height: 1;
+      display: block;
+    }
+    .goal-unit {
+      font-size: clamp(1rem, 4vw, 1.8rem);
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .goal-bar-wrap {
+      background: rgba(255,255,255,0.06);
+      border-radius: 100px;
+      height: 10px;
+      max-width: 480px;
+      margin: 0 auto 12px;
+      overflow: hidden;
+    }
+    .goal-bar {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--gold), #e6a817);
+      width: 0%;
+      transition: width 2s ease;
+    }
+    .goal-bar-label {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .goal-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 40px;
+    }
+    .goal-item {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .goal-item .g-num {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    .goal-item .g-lbl { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+    /* ─── STRATEGIES ─── */
+    #strategies { border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .strategy-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .strategy-item {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      transition: all .3s;
+    }
+    .strategy-item:hover {
+      border-color: rgba(245,197,24,0.3);
+      background: var(--card2);
+    }
+
+    .strategy-num {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--gold);
+      opacity: .3;
+      line-height: 1;
+      min-width: 40px;
+    }
+
+    .strategy-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .strategy-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+
+    /* ─── INCOME ─── */
+    #income { border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .income-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 14px;
+    }
+
+    .income-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 24px 14px;
+      text-align: center;
+      transition: all .3s;
+    }
+    .income-card:hover {
+      border-color: rgba(245,197,24,0.4);
+      transform: translateY(-4px);
+    }
+
+    .income-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .income-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .income-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.6; }
+
+    /* ─── FINAL 6 MONTHS ─── */
+    #roadmap { border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 9px; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 36px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -23px;
+      top: 6px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 10px rgba(245,197,24,0.6);
+    }
+
+    .timeline-month {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .timeline-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .timeline-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center;
+      padding: 48px 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    footer .foot-logo {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ─── PROGRESS RING ─── */
+    .ring-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .ring-svg { transform: rotate(-90deg); }
+    .ring-track { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
+    .ring-fill {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 440;
+      stroke-dashoffset: 440;
+      transition: stroke-dashoffset 2s ease;
+    }
+    .ring-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      text-align: center;
+    }
+    .ring-outer { position: relative; display: inline-block; }
+    .ring-pct { font-size: 1.4rem; font-weight: 900; color: var(--gold); }
+    .ring-sub { font-size: 0.6rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Power <span>of</span> Si<span style="color:var(--gold)">X</span></div>
+  <ul class="nav-links">
+    <li><a href="#countdown">เริ่มต้น</a></li>
+    <li><a href="#team">ทีม</a></li>
+    <li><a href="#goal">เป้าหมาย</a></li>
+    <li><a href="#strategies">กลยุทธ์</a></li>
+    <li><a href="#income">รายได้</a></li>
+    <li><a href="#roadmap">โรดแมป</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="hero-glow"></div>
+  <div class="six-badge">6 คน · 6 เดือน · 60,000</div>
+  <h1 class="hero-title">
+    <span class="power">POWER</span>
+    <span class="of">of</span>
+    <span class="six">SiX</span>
+  </h1>
+  <p class="hero-sub">พลังของ 6 คน ขับเคลื่อน 6 กลยุทธ์<br/>สู่เป้าหมาย 60,000 ใน 6 เดือน</p>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="num">6</span>
+      <span class="lbl">คน</span>
+    </div>
+    <div class="hero-stat">
+      <span class="num">6</span>
+      <span class="lbl">กลยุทธ์</span>
+    </div>
+    <div class="hero-stat">
+      <span class="num">60K</span>
+      <span class="lbl">เป้าหมาย</span>
+    </div>
+    <div class="hero-stat">
+      <span class="num">6</span>
+      <span class="lbl">เดือน</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+    เลื่อนลง
+  </div>
+</div>
+
+<!-- SECTION 1: COUNTDOWN -->
+<section id="countdown">
+  <div class="fade-in">
+    <div class="section-number">01 / 6 เดือนแรก</div>
+    <h2 class="section-title">นับถอยหลัง<br/><span class="highlight">สู่เป้าหมาย</span></h2>
+    <p class="section-desc">เส้นทาง 6 เดือนแห่งการลงมือทำ ทุกวินาทีมีค่า ทุกก้าวสำคัญ</p>
+  </div>
+
+  <div class="countdown-wrap fade-in">
+    <div class="cd-box">
+      <span class="cd-num" id="cd-days">00</span>
+      <div class="cd-label">วัน</div>
+    </div>
+    <div class="cd-box">
+      <span class="cd-num" id="cd-hours">00</span>
+      <div class="cd-label">ชั่วโมง</div>
+    </div>
+    <div class="cd-box">
+      <span class="cd-num" id="cd-mins">00</span>
+      <div class="cd-label">นาที</div>
+    </div>
+    <div class="cd-box">
+      <span class="cd-num" id="cd-secs">00</span>
+      <div class="cd-label">วินาที</div>
+    </div>
+  </div>
+
+  <div class="countdown-target fade-in">
+    ถึงวันที่ <strong id="target-date-label">—</strong> · เริ่มต้น 6 เดือนแห่งพลัง
+  </div>
+</section>
+
+<!-- SECTION 2: TEAM -->
+<section id="team">
+  <div class="fade-in">
+    <div class="section-number">02 / 6 คน</div>
+    <h2 class="section-title">ทีม<span class="highlight">พลังหก</span></h2>
+    <p class="section-desc">6 คน 6 ความสามารถ รวมพลังเป็นหนึ่งเดียว</p>
+  </div>
+
+  <div class="team-grid fade-in">
+    <div class="member-card">
+      <div class="member-avatar avatar-colors">F</div>
+      <div class="member-name">สมาชิก 1</div>
+      <div class="member-role">Leader</div>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar avatar-colors c2">A</div>
+      <div class="member-name">สมาชิก 2</div>
+      <div class="member-role">Strategist</div>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar avatar-colors c3">B</div>
+      <div class="member-name">สมาชิก 3</div>
+      <div class="member-role">Creative</div>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar avatar-colors c4">C</div>
+      <div class="member-name">สมาชิก 4</div>
+      <div class="member-role">Sales</div>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar avatar-colors c5">D</div>
+      <div class="member-name">สมาชิก 5</div>
+      <div class="member-role">Finance</div>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar avatar-colors c6">E</div>
+      <div class="member-name">สมาชิก 6</div>
+      <div class="member-role">Operations</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: GOAL 60,000 -->
+<section id="goal">
+  <div class="fade-in">
+    <div class="section-number">03 / 60,000</div>
+    <h2 class="section-title">เป้าหมาย<span class="highlight">ร่วมกัน</span></h2>
+    <p class="section-desc">60,000 คือตัวเลขที่เราต่างมุ่งไปด้วยกัน ใน 6 เดือน</p>
+  </div>
+
+  <div class="goal-big fade-in">
+    <span class="goal-number" id="goal-counter">0</span>
+    <span class="goal-unit">บาท / เดือน</span>
+  </div>
+
+  <div class="goal-bar-wrap fade-in">
+    <div class="goal-bar" id="goal-bar"></div>
+  </div>
+  <div class="goal-bar-label fade-in">ความคืบหน้าสู่เป้าหมาย</div>
+
+  <div class="goal-breakdown fade-in">
+    <div class="goal-item">
+      <div class="g-num">10,000</div>
+      <div class="g-lbl">ต่อคน / เดือน</div>
+    </div>
+    <div class="goal-item">
+      <div class="g-num">360,000</div>
+      <div class="g-lbl">รวม 6 เดือน</div>
+    </div>
+    <div class="goal-item">
+      <div class="g-num">6</div>
+      <div class="g-lbl">ช่องทางรายได้</div>
+    </div>
+    <div class="goal-item">
+      <div class="g-num">6</div>
+      <div class="g-lbl">กลยุทธ์หลัก</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: STRATEGIES -->
+<section id="strategies">
+  <div class="fade-in">
+    <div class="section-number">04 / 6 กลยุทธ์</div>
+    <h2 class="section-title"><span class="highlight">6 กลยุทธ์</span><br/>ขับเคลื่อนความสำเร็จ</h2>
+    <p class="section-desc">แต่ละกลยุทธ์ถูกออกแบบมาเพื่อเสริมพลังซึ่งกันและกัน</p>
+  </div>
+
+  <div class="strategy-list fade-in">
+    <div class="strategy-item">
+      <span class="strategy-num">01</span>
+      <div>
+        <div class="strategy-title">กลยุทธ์ที่ 1</div>
+        <div class="strategy-desc">รายละเอียดกลยุทธ์ — แผนการดำเนินงาน วิธีการ และเป้าหมายที่ชัดเจน</div>
+      </div>
+    </div>
+    <div class="strategy-item">
+      <span class="strategy-num">02</span>
+      <div>
+        <div class="strategy-title">กลยุทธ์ที่ 2</div>
+        <div class="strategy-desc">รายละเอียดกลยุทธ์ — แผนการดำเนินงาน วิธีการ และเป้าหมายที่ชัดเจน</div>
+      </div>
+    </div>
+    <div class="strategy-item">
+      <span class="strategy-num">03</span>
+      <div>
+        <div class="strategy-title">กลยุทธ์ที่ 3</div>
+        <div class="strategy-desc">รายละเอียดกลยุทธ์ — แผนการดำเนินงาน วิธีการ และเป้าหมายที่ชัดเจน</div>
+      </div>
+    </div>
+    <div class="strategy-item">
+      <span class="strategy-num">04</span>
+      <div>
+        <div class="strategy-title">กลยุทธ์ที่ 4</div>
+        <div class="strategy-desc">รายละเอียดกลยุทธ์ — แผนการดำเนินงาน วิธีการ และเป้าหมายที่ชัดเจน</div>
+      </div>
+    </div>
+    <div class="strategy-item">
+      <span class="strategy-num">05</span>
+      <div>
+        <div class="strategy-title">กลยุทธ์ที่ 5</div>
+        <div class="strategy-desc">รายละเอียดกลยุทธ์ — แผนการดำเนินงาน วิธีการ และเป้าหมายที่ชัดเจน</div>
+      </div>
+    </div>
+    <div class="strategy-item">
+      <span class="strategy-num">06</span>
+      <div>
+        <div class="strategy-title">กลยุทธ์ที่ 6</div>
+        <div class="strategy-desc">รายละเอียดกลยุทธ์ — แผนการดำเนินงาน วิธีการ และเป้าหมายที่ชัดเจน</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: INCOME CHANNELS -->
+<section id="income">
+  <div class="fade-in">
+    <div class="section-number">05 / 6 ช่องทางรายได้</div>
+    <h2 class="section-title"><span class="highlight">6 ช่องทาง</span><br/>สร้างรายได้</h2>
+    <p class="section-desc">กระจายรายได้หลากหลายช่องทาง เพื่อความมั่นคงและยั่งยืน</p>
+  </div>
+
+  <div class="income-grid fade-in">
+    <div class="income-card">
+      <span class="income-icon">💼</span>
+      <div class="income-name">ช่องทางที่ 1</div>
+      <div class="income-desc">รายละเอียดช่องทางรายได้</div>
+    </div>
+    <div class="income-card">
+      <span class="income-icon">📱</span>
+      <div class="income-name">ช่องทางที่ 2</div>
+      <div class="income-desc">รายละเอียดช่องทางรายได้</div>
+    </div>
+    <div class="income-card">
+      <span class="income-icon">🌐</span>
+      <div class="income-name">ช่องทางที่ 3</div>
+      <div class="income-desc">รายละเอียดช่องทางรายได้</div>
+    </div>
+    <div class="income-card">
+      <span class="income-icon">🤝</span>
+      <div class="income-name">ช่องทางที่ 4</div>
+      <div class="income-desc">รายละเอียดช่องทางรายได้</div>
+    </div>
+    <div class="income-card">
+      <span class="income-icon">📊</span>
+      <div class="income-name">ช่องทางที่ 5</div>
+      <div class="income-desc">รายละเอียดช่องทางรายได้</div>
+    </div>
+    <div class="income-card">
+      <span class="income-icon">🚀</span>
+      <div class="income-name">ช่องทางที่ 6</div>
+      <div class="income-desc">รายละเอียดช่องทางรายได้</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: ROADMAP -->
+<section id="roadmap">
+  <div class="fade-in">
+    <div class="section-number">06 / 6 เดือนหลัง</div>
+    <h2 class="section-title">โรดแมป<br/><span class="highlight">6 เดือน</span></h2>
+    <p class="section-desc">แผนที่นำทางแบบเดือนต่อเดือน ชัดเจน วัดผลได้</p>
+  </div>
+
+  <div class="timeline fade-in">
+    <div class="timeline-item">
+      <div class="timeline-month">เดือนที่ 1</div>
+      <div class="timeline-title">วางรากฐาน · ตั้งทีม</div>
+      <div class="timeline-desc">กำหนดบทบาท สร้างระบบ วางแผนงาน และเริ่มต้นขับเคลื่อนไปพร้อมกัน</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-month">เดือนที่ 2</div>
+      <div class="timeline-title">ลงมือ · สร้างโมเมนตัม</div>
+      <div class="timeline-desc">เปิดตัวช่องทางรายได้แรก ทดสอบกลยุทธ์ และเรียนรู้จากตลาด</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-month">เดือนที่ 3</div>
+      <div class="timeline-title">ขยาย · เพิ่มกำลัง</div>
+      <div class="timeline-desc">ขยายช่องทางที่ได้ผล ปรับแผนตามข้อมูล มุ่งสู่ครึ่งทางของเป้าหมาย</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-month">เดือนที่ 4</div>
+      <div class="timeline-title">เร่งเครื่อง · สเกลอัพ</div>
+      <div class="timeline-desc">เปิดช่องทางรายได้เพิ่มเติม สร้าง passive income และเพิ่มประสิทธิภาพ</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-month">เดือนที่ 5</div>
+      <div class="timeline-title">รักษา · ปรับแต่ง</div>
+      <div class="timeline-desc">Optimize ทุกช่องทาง รักษา momentum เตรียมปิดเป้าหมาย</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-month">เดือนที่ 6</div>
+      <div class="timeline-title">🎯 ชัยชนะ · ฉลองความสำเร็จ</div>
+      <div class="timeline-desc">บรรลุเป้าหมาย 60,000 วิเคราะห์ผล และวางแผนก้าวต่อไปของ Power of SiX</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">Power of Si<span style="font-style:italic">X</span></div>
+  <p>6 คน · 6 กลยุทธ์ · 60,000 · 6 เดือน</p>
+  <p style="margin-top:8px;opacity:.4">© 2025 Power of SiX Team</p>
+</footer>
+
+<script>
+  // ─── COUNTDOWN ───
+  const SIX_MONTHS_MS = 6 * 30 * 24 * 60 * 60 * 1000;
+  const start = new Date();
+  const target = new Date(start.getTime() + SIX_MONTHS_MS);
+
+  document.getElementById('target-date-label').textContent =
+    target.toLocaleDateString('th-TH', { day:'numeric', month:'long', year:'numeric' });
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    const now = Date.now();
+    const diff = Math.max(0, target - now);
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-days').textContent = pad(d);
+    document.getElementById('cd-hours').textContent = pad(h);
+    document.getElementById('cd-mins').textContent = pad(m);
+    document.getElementById('cd-secs').textContent = pad(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // ─── INTERSECTION OBSERVER ───
+  const fades = document.querySelectorAll('.fade-in');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // Trigger counters & bars when goal section visible
+        if (e.target.closest('#goal') || e.target.id === 'goal') {
+          startGoalAnim();
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+
+  fades.forEach(el => obs.observe(el));
+
+  // ─── GOAL COUNTER ───
+  let goalStarted = false;
+  function startGoalAnim() {
+    if (goalStarted) return;
+    goalStarted = true;
+
+    // Number counter
+    const el = document.getElementById('goal-counter');
+    let v = 0;
+    const step = 60000 / 60;
+    const iv = setInterval(() => {
+      v = Math.min(v + step, 60000);
+      el.textContent = Math.round(v).toLocaleString('th-TH');
+      if (v >= 60000) clearInterval(iv);
+    }, 16);
+
+    // Progress bar (show 65% as example progress)
+    setTimeout(() => {
+      document.getElementById('goal-bar').style.width = '65%';
+    }, 200);
+  }
+
+  // Also watch goal section directly
+  const goalSection = document.getElementById('goal');
+  const goalObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) startGoalAnim();
+  }, { threshold: 0.2 });
+  goalObs.observe(goalSection);
+</script>
+</body>
+</html>
