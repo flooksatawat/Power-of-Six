@@ -176,48 +176,28 @@ nav{
   font-weight:900;font-style:italic;
   line-height:1;
   display:block;
+  perspective:400px;
 }
-/* flip card */
 .flip-box{
   display:inline-block;
   position:relative;
-  width:1.1em;height:1.1em;
-  perspective:300px;
 }
-.flip-top,.flip-bot{
-  position:absolute;left:0;right:0;height:50%;
-  overflow:hidden;
-  display:flex;align-items:flex-end;justify-content:center;
-  background:rgba(0,0,0,0);
-}
-.flip-top{ top:0; align-items:flex-end; transform-origin:bottom; }
-.flip-bot{ bottom:0; align-items:flex-start; transform-origin:top; }
-.flip-top .d,.flip-bot .d{
-  font-size:1em;line-height:1;
+.flip-face{
+  display:inline-block;
   background:linear-gradient(135deg,#fff,var(--g1));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   font-weight:900;font-style:italic;
-  user-select:none;
+  transform-origin:center;
+  backface-visibility:hidden;
 }
-/* during flip */
-.flip-top.going{
-  animation:flipTopOut .18s ease-in forwards;
+.flip-face.do-flip{
+  animation:cardFlip .28s ease-in-out;
 }
-.flip-bot.incoming{
-  animation:flipBotIn .18s ease-out forwards;
-}
-@keyframes flipTopOut{
-  0%  {transform:rotateX(0)}
-  100%{transform:rotateX(-90deg)}
-}
-@keyframes flipBotIn{
-  0%  {transform:rotateX(90deg)}
-  100%{transform:rotateX(0)}
-}
-/* separator line */
-.flip-box::after{
-  content:'';position:absolute;top:50%;left:0;right:0;
-  height:1px;background:rgba(0,0,0,.5);z-index:10;
+@keyframes cardFlip{
+  0%   {transform:rotateX(0deg)   scaleY(1)}
+  40%  {transform:rotateX(-90deg) scaleY(0.6)}
+  60%  {transform:rotateX(90deg)  scaleY(0.6)}
+  100% {transform:rotateX(0deg)   scaleY(1)}
 }
 .stat-pill .l{
   font-size:clamp(.55rem,.9vw,.72rem);
@@ -557,27 +537,27 @@ footer{
 
   <div class="hero-stats reveal" id="hero-stats">
     <div class="stat-pill">
-      <span class="n"><div class="flip-box" id="flip-0"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
+      <span class="n"><div class="flip-box"><span class="flip-face" id="flip-0">1</span></div></span>
       <span class="l">เดือนแรก</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="flip-box" id="flip-1"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
+      <span class="n"><div class="flip-box"><span class="flip-face" id="flip-1">1</span></div></span>
       <span class="l">หมื่น/เดือน</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="flip-box" id="flip-2"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
+      <span class="n"><div class="flip-box"><span class="flip-face" id="flip-2">1</span></div></span>
       <span class="l">คน</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="flip-box" id="flip-3"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
+      <span class="n"><div class="flip-box"><span class="flip-face" id="flip-3">1</span></div></span>
       <span class="l">ช่องทางรายได้</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="flip-box" id="flip-4"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
+      <span class="n"><div class="flip-box"><span class="flip-face" id="flip-4">1</span></div></span>
       <span class="l">กลยุทธ์</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="flip-box" id="flip-5"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
+      <span class="n"><div class="flip-box"><span class="flip-face" id="flip-5">1</span></div></span>
       <span class="l">เดือนหลัง</span>
     </div>
   </div>
@@ -820,48 +800,29 @@ function tick(){
 }
 tick();setInterval(tick,1000);
 
-// ── FLIP SCOREBOARD ANIMATION ──
-function flipTo(boxId, targetNum, startDelay) {
-  const box = document.getElementById(boxId);
-  const top = box.querySelector('.flip-top');
-  const bot = box.querySelector('.flip-bot');
-  const sequence = [1,2,3,4,5,6].slice(0, targetNum); // flip through 1→target
-
-  let current = 0;
-  function doFlip(toDigit) {
-    const prevDigit = toDigit === 1 ? 1 : toDigit - 1;
-    // top shows old number, bot will show new
-    top.querySelector('.d').textContent = prevDigit;
-    bot.querySelector('.d').textContent = toDigit;
-
-    // animate top flipping down, then reveal bot
-    top.classList.add('going');
-    setTimeout(() => {
-      bot.classList.add('incoming');
-      top.querySelector('.d').textContent = toDigit;
-    }, 90);
-    setTimeout(() => {
-      top.classList.remove('going');
-      bot.classList.remove('incoming');
-      bot.querySelector('.d').textContent = toDigit;
-    }, 270);
-  }
-
-  sequence.forEach((digit, i) => {
-    setTimeout(() => doFlip(digit), startDelay + i * 200);
-  });
+// ── FLIP ANIMATION ──
+function flipCard(el, toDigit) {
+  el.classList.remove('do-flip');
+  void el.offsetWidth; // reflow
+  el.classList.add('do-flip');
+  // swap number at midpoint of animation
+  setTimeout(() => { el.textContent = toDigit; }, 140);
+  setTimeout(() => { el.classList.remove('do-flip'); }, 280);
 }
 
 function runAllFlips() {
+  const seq = [1,2,3,4,5,6];
   for (let i = 0; i < 6; i++) {
-    flipTo('flip-' + i, 6, 400 + i * 180);
+    const el = document.getElementById('flip-' + i);
+    el.textContent = '1';
+    seq.forEach((digit, step) => {
+      setTimeout(() => flipCard(el, digit), i * 160 + step * 220 + 300);
+    });
   }
 }
 
 window.addEventListener('load', runAllFlips);
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('hero-stats').addEventListener('click', runAllFlips);
-});
+document.getElementById('hero-stats').addEventListener('click', runAllFlips);
 
 // ── REVEAL ON SCROLL ──
 const revEls=document.querySelectorAll('.reveal');
