@@ -175,24 +175,54 @@ nav{
   font-size:clamp(1.8rem,5vw,2.8rem);
   font-weight:900;font-style:italic;
   line-height:1;
+  display:block;
+}
+/* flip card */
+.flip-box{
+  display:inline-block;
+  position:relative;
+  width:1.1em;height:1.1em;
+  perspective:300px;
+}
+.flip-top,.flip-bot{
+  position:absolute;left:0;right:0;height:50%;
+  overflow:hidden;
+  display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(0,0,0,0);
+}
+.flip-top{ top:0; align-items:flex-end; transform-origin:bottom; }
+.flip-bot{ bottom:0; align-items:flex-start; transform-origin:top; }
+.flip-top .d,.flip-bot .d{
+  font-size:1em;line-height:1;
   background:linear-gradient(135deg,#fff,var(--g1));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  display:block;
-  overflow:hidden;
-  height:1.1em;
+  font-weight:900;font-style:italic;
+  user-select:none;
 }
-.slot-inner{
-  display:flex;flex-direction:column;
-  transition:transform .0s;
+/* during flip */
+.flip-top.going{
+  animation:flipTopOut .18s ease-in forwards;
 }
-.slot-digit{
-  height:1.1em;line-height:1.1;
-  display:flex;align-items:center;justify-content:center;
+.flip-bot.incoming{
+  animation:flipBotIn .18s ease-out forwards;
+}
+@keyframes flipTopOut{
+  0%  {transform:rotateX(0)}
+  100%{transform:rotateX(-90deg)}
+}
+@keyframes flipBotIn{
+  0%  {transform:rotateX(90deg)}
+  100%{transform:rotateX(0)}
+}
+/* separator line */
+.flip-box::after{
+  content:'';position:absolute;top:50%;left:0;right:0;
+  height:1px;background:rgba(0,0,0,.5);z-index:10;
 }
 .stat-pill .l{
   font-size:clamp(.55rem,.9vw,.72rem);
   color:var(--muted2);
-  margin-top:4px;
+  margin-top:6px;
   letter-spacing:.5px;
   text-align:center;
 }
@@ -527,27 +557,27 @@ footer{
 
   <div class="hero-stats reveal" id="hero-stats">
     <div class="stat-pill">
-      <span class="n"><div class="slot-inner" id="slot-0"><div class="slot-digit">6</div></div></span>
+      <span class="n"><div class="flip-box" id="flip-0"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
       <span class="l">เดือนแรก</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="slot-inner" id="slot-1"><div class="slot-digit">6</div></div></span>
+      <span class="n"><div class="flip-box" id="flip-1"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
       <span class="l">หมื่น/เดือน</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="slot-inner" id="slot-2"><div class="slot-digit">6</div></div></span>
+      <span class="n"><div class="flip-box" id="flip-2"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
       <span class="l">คน</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="slot-inner" id="slot-3"><div class="slot-digit">6</div></div></span>
+      <span class="n"><div class="flip-box" id="flip-3"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
       <span class="l">ช่องทางรายได้</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="slot-inner" id="slot-4"><div class="slot-digit">6</div></div></span>
+      <span class="n"><div class="flip-box" id="flip-4"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
       <span class="l">กลยุทธ์</span>
     </div>
     <div class="stat-pill">
-      <span class="n"><div class="slot-inner" id="slot-5"><div class="slot-digit">6</div></div></span>
+      <span class="n"><div class="flip-box" id="flip-5"><div class="flip-top"><div class="d">1</div></div><div class="flip-bot"><div class="d">1</div></div></div></span>
       <span class="l">เดือนหลัง</span>
     </div>
   </div>
@@ -790,29 +820,47 @@ function tick(){
 }
 tick();setInterval(tick,1000);
 
-// ── SLOT MACHINE ANIMATION ──
-function runSlot(id, delay) {
-  const el = document.getElementById(id);
-  const digits = [1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6]; // ends on 6
-  // build stack
-  el.innerHTML = digits.map(d=>`<div class="slot-digit">${d}</div>`).join('');
-  const h = el.parentElement.offsetHeight || 40;
-  const total = digits.length;
-  el.style.transition = 'none';
-  el.style.transform = 'translateY(0)';
+// ── FLIP SCOREBOARD ANIMATION ──
+function flipTo(boxId, targetNum, startDelay) {
+  const box = document.getElementById(boxId);
+  const top = box.querySelector('.flip-top');
+  const bot = box.querySelector('.flip-bot');
+  const sequence = [1,2,3,4,5,6].slice(0, targetNum); // flip through 1→target
 
-  setTimeout(() => {
-    el.style.transition = `transform ${1.1 + delay*0.08}s cubic-bezier(0.15,0.85,0.35,1)`;
-    el.style.transform = `translateY(-${(total-1) * 1.1}em)`;
-  }, 200 + delay * 120);
+  let current = 0;
+  function doFlip(toDigit) {
+    const prevDigit = toDigit === 1 ? 1 : toDigit - 1;
+    // top shows old number, bot will show new
+    top.querySelector('.d').textContent = prevDigit;
+    bot.querySelector('.d').textContent = toDigit;
+
+    // animate top flipping down, then reveal bot
+    top.classList.add('going');
+    setTimeout(() => {
+      bot.classList.add('incoming');
+      top.querySelector('.d').textContent = toDigit;
+    }, 90);
+    setTimeout(() => {
+      top.classList.remove('going');
+      bot.classList.remove('incoming');
+      bot.querySelector('.d').textContent = toDigit;
+    }, 270);
+  }
+
+  sequence.forEach((digit, i) => {
+    setTimeout(() => doFlip(digit), startDelay + i * 200);
+  });
 }
 
-window.addEventListener('load', () => {
-  for (let i = 0; i < 6; i++) runSlot('slot-' + i, i);
-  // re-run on click anywhere on hero stats
-  document.getElementById('hero-stats').addEventListener('click', () => {
-    for (let i = 0; i < 6; i++) runSlot('slot-' + i, i);
-  });
+function runAllFlips() {
+  for (let i = 0; i < 6; i++) {
+    flipTo('flip-' + i, 6, 400 + i * 180);
+  }
+}
+
+window.addEventListener('load', runAllFlips);
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('hero-stats').addEventListener('click', runAllFlips);
 });
 
 // ── REVEAL ON SCROLL ──
