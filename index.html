@@ -177,6 +177,17 @@ nav{
   line-height:1;
   background:linear-gradient(135deg,#fff,var(--g1));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  display:block;
+  overflow:hidden;
+  height:1.1em;
+}
+.slot-inner{
+  display:flex;flex-direction:column;
+  transition:transform .0s;
+}
+.slot-digit{
+  height:1.1em;line-height:1.1;
+  display:flex;align-items:center;justify-content:center;
 }
 .stat-pill .l{
   font-size:clamp(.55rem,.9vw,.72rem);
@@ -514,29 +525,29 @@ footer{
     <span class="six">SiX</span>
   </h1>
 
-  <div class="hero-stats reveal">
+  <div class="hero-stats reveal" id="hero-stats">
     <div class="stat-pill">
-      <span class="n">6</span>
+      <span class="n"><div class="slot-inner" id="slot-0"><div class="slot-digit">6</div></div></span>
       <span class="l">เดือนแรก</span>
     </div>
     <div class="stat-pill">
-      <span class="n">6</span>
+      <span class="n"><div class="slot-inner" id="slot-1"><div class="slot-digit">6</div></div></span>
       <span class="l">หมื่น/เดือน</span>
     </div>
     <div class="stat-pill">
-      <span class="n">6</span>
+      <span class="n"><div class="slot-inner" id="slot-2"><div class="slot-digit">6</div></div></span>
       <span class="l">คน</span>
     </div>
     <div class="stat-pill">
-      <span class="n">6</span>
+      <span class="n"><div class="slot-inner" id="slot-3"><div class="slot-digit">6</div></div></span>
       <span class="l">ช่องทางรายได้</span>
     </div>
     <div class="stat-pill">
-      <span class="n">6</span>
+      <span class="n"><div class="slot-inner" id="slot-4"><div class="slot-digit">6</div></div></span>
       <span class="l">กลยุทธ์</span>
     </div>
     <div class="stat-pill">
-      <span class="n">6</span>
+      <span class="n"><div class="slot-inner" id="slot-5"><div class="slot-digit">6</div></div></span>
       <span class="l">เดือนหลัง</span>
     </div>
   </div>
@@ -778,6 +789,31 @@ function tick(){
   document.getElementById('cd-secs').textContent=pad(Math.floor(d%60000/1000));
 }
 tick();setInterval(tick,1000);
+
+// ── SLOT MACHINE ANIMATION ──
+function runSlot(id, delay) {
+  const el = document.getElementById(id);
+  const digits = [1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6]; // ends on 6
+  // build stack
+  el.innerHTML = digits.map(d=>`<div class="slot-digit">${d}</div>`).join('');
+  const h = el.parentElement.offsetHeight || 40;
+  const total = digits.length;
+  el.style.transition = 'none';
+  el.style.transform = 'translateY(0)';
+
+  setTimeout(() => {
+    el.style.transition = `transform ${1.1 + delay*0.08}s cubic-bezier(0.15,0.85,0.35,1)`;
+    el.style.transform = `translateY(-${(total-1) * 1.1}em)`;
+  }, 200 + delay * 120);
+}
+
+window.addEventListener('load', () => {
+  for (let i = 0; i < 6; i++) runSlot('slot-' + i, i);
+  // re-run on click anywhere on hero stats
+  document.getElementById('hero-stats').addEventListener('click', () => {
+    for (let i = 0; i < 6; i++) runSlot('slot-' + i, i);
+  });
+});
 
 // ── REVEAL ON SCROLL ──
 const revEls=document.querySelectorAll('.reveal');
