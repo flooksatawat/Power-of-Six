@@ -14,12 +14,14 @@
   --glass-border:rgba(255,255,255,0.08);
   --text:#f4f4ff;--muted:#6b6b8a;--muted2:#9898b8;
 }
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;font-size:18px}
+@media(max-width:430px){html{font-size:19px}}
 body{
   font-family:'Prompt',sans-serif;
   background:var(--bg);
   color:var(--text);
   overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
 }
 
 /* SCROLLBAR */
@@ -244,8 +246,8 @@ nav{
 }
 .sec-title em{font-style:italic;color:var(--g1)}
 .sec-sub{
-  font-size:clamp(.85rem,2vw,1rem);
-  color:var(--muted2);line-height:1.8;
+  font-size:clamp(1rem,2.5vw,1.1rem);
+  color:var(--muted2);line-height:1.9;
   max-width:520px;margin-bottom:52px;
 }
 
@@ -291,7 +293,7 @@ nav{
 }
 .cd-target{
   margin-top:28px;text-align:center;
-  color:var(--muted);font-size:.82rem;line-height:1.8;
+  color:var(--muted);font-size:.95rem;line-height:1.8;
 }
 .cd-target strong{color:var(--g1)}
 
@@ -344,8 +346,8 @@ nav{
 .c5{background:linear-gradient(135deg,#0d3b3b,#0f6060)}
 .c6{background:linear-gradient(135deg,#3b1a0d,#7a3a10)}
 
-.m-name{font-size:.9rem;font-weight:700;margin-bottom:4px}
-.m-role{font-size:.68rem;color:var(--muted2);letter-spacing:.5px}
+.m-name{font-size:1rem;font-weight:700;margin-bottom:4px}
+.m-role{font-size:.8rem;color:var(--muted2);letter-spacing:.5px}
 
 /* ── GOAL ── */
 .goal-hero{text-align:center;margin-bottom:52px}
@@ -418,8 +420,8 @@ nav{
   opacity:.5;
 }
 .s-item:hover .s-num{opacity:1}
-.s-title{font-size:.95rem;font-weight:700;margin-bottom:5px}
-.s-desc{font-size:.78rem;color:var(--muted2);line-height:1.7}
+.s-title{font-size:1.05rem;font-weight:700;margin-bottom:6px}
+.s-desc{font-size:.9rem;color:var(--muted2);line-height:1.8}
 
 /* ── INCOME ── */
 .income-grid{
@@ -442,8 +444,8 @@ nav{
 .i-card:hover{transform:translateY(-6px);border-color:rgba(245,197,24,.25)}
 .i-card:hover::after{opacity:1}
 .i-icon{font-size:2rem;margin-bottom:12px;display:block;filter:drop-shadow(0 4px 12px rgba(245,197,24,.3))}
-.i-name{font-size:.85rem;font-weight:700;margin-bottom:5px}
-.i-desc{font-size:.68rem;color:var(--muted2);line-height:1.6}
+.i-name{font-size:1rem;font-weight:700;margin-bottom:6px}
+.i-desc{font-size:.82rem;color:var(--muted2);line-height:1.7}
 
 /* ── ROADMAP ── */
 .timeline{
@@ -470,11 +472,11 @@ nav{
   box-shadow:0 0 0 6px rgba(245,197,24,.2),0 0 24px rgba(245,197,24,.6);
 }
 .tl-month{
-  font-size:.62rem;font-weight:700;letter-spacing:3px;
+  font-size:.75rem;font-weight:700;letter-spacing:3px;
   color:var(--g1);text-transform:uppercase;margin-bottom:6px;
 }
-.tl-title{font-size:1rem;font-weight:700;margin-bottom:6px}
-.tl-desc{font-size:.8rem;color:var(--muted2);line-height:1.75}
+.tl-title{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.tl-desc{font-size:.92rem;color:var(--muted2);line-height:1.8}
 
 /* ── FOOTER ── */
 footer{
